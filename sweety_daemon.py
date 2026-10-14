@@ -1,0 +1,22 @@
+import time
+import subprocess
+from datetime import datetime
+
+print("=========================================================================")
+print("     SWEETYAI LOCAL BACKGROUND SCHEDULER & MORNING BRIEFING DAEMON         ")
+print("=========================================================================")
+print(" -> Running 24/7 in local memory (Air-Gapped | Zero Telemetry)")
+print(" -> Scheduled Trigger: Every day at 08:30 AM\n")
+
+while True:
+    now = datetime.now()
+    if now.hour == 8 and now.minute == 30:
+        dt_str = now.strftime('%Y-%m-%d %H:%M:%S')
+        print(f"[{dt_str}] Triggering Scheduled Morning Briefing...")
+        try:
+            subprocess.run(["python3", "sweety.py", "diary", "briefing", "--notify"], check=False)
+        except Exception as e:
+            print(f"[Error] Failed to run briefing: {e}")
+        time.sleep(60)
+    else:
+        time.sleep(30)
