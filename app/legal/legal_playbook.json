@@ -1,0 +1,160 @@
+{
+  "version": "1.0.0",
+  "name": "SweetyAI Standard Enterprise Legal Playbook",
+  "jurisdiction": "Common Law / India / International Commercial",
+  "categories": {
+    "limitation_of_liability": {
+      "name": "Limitation of Liability",
+      "keywords": ["limitation of liability", "consequential damages", "aggregate liability", "indirect damages", "cap on liability", "punitive damages"],
+      "standard_rule": "Mutual liability cap limited to total fees paid or payable in the preceding 12 months, with mutual exclusion of indirect, consequential, and special damages. Carve-outs strictly limited to gross negligence, willful misconduct, confidentiality breach, and indemnification obligations.",
+      "red_triggers": [
+        "unlimited liability",
+        "uncapped liability",
+        "shall not be limited",
+        "no cap",
+        "waives all limitations",
+        "liability shall exceed 5x",
+        "unilateral liability cap",
+        "infinite liability"
+      ],
+      "amber_triggers": [
+        "multiplier exceeding 2x",
+        "cap exceeds total fees",
+        "consequential damages included",
+        "ambiguous carve-outs",
+        "super cap"
+      ],
+      "green_triggers": [
+        "12 months fees paid",
+        "mutual exclusion of indirect",
+        "total aggregate liability shall not exceed",
+        "gross negligence and willful misconduct"
+      ],
+      "fallback_clause": "Except for liability arising from gross negligence, willful misconduct, breach of Section [Confidentiality], or indemnification obligations under Section [Indemnity], each party's total aggregate liability arising out of or related to this Agreement shall be limited to the total fees paid or payable by Customer to Vendor under the applicable Statement of Work in the twelve (12) months preceding the incident giving rise to liability. In no event shall either party be liable for any indirect, special, incidental, punitive, or consequential damages.",
+      "guidance": "Uncapped liabilities expose the organization to existential downside. Counter with a standard 12-month trailing fee aggregate cap and mutual consequential damage disclaimer."
+    },
+    "indemnification": {
+      "name": "Indemnification & Defense Obligations",
+      "keywords": ["indemnify", "indemnification", "hold harmless", "defend and hold", "third-party claims", "ip infringement"],
+      "standard_rule": "Mutual indemnification strictly limited to third-party intellectual property infringement claims and gross negligence/willful misconduct. Defense obligations must mandate prompt written notice, sole control of defense, and prohibition on settlements imposing financial or admission liability without prior written consent.",
+      "red_triggers": [
+        "indemnify against any and all claims",
+        "unilateral indemnity",
+        "indemnify for ordinary breach",
+        "without regard to fault",
+        "customer's sole negligence",
+        "infinite indemnification"
+      ],
+      "amber_triggers": [
+        "indemnity without right of defense control",
+        "no prompt notice requirement",
+        "broad indirect claims indemnity"
+      ],
+      "green_triggers": [
+        "third-party ip infringement",
+        "prompt written notice",
+        "sole control of defense",
+        "mutual indemnification",
+        "no settlement without consent"
+      ],
+      "fallback_clause": "Each party ('Indemnifying Party') agrees to defend, indemnify, and hold harmless the other party, its affiliates, officers, and employees from and against any third-party claims, suits, or proceedings alleging that the deliverables or materials provided infringe any patent, copyright, or trademark, provided that the indemnified party: (a) gives prompt written notice; (b) grants sole control of defense and settlement; and (c) provides reasonable cooperation.",
+      "guidance": "Reject broad indemnities for general breach of contract. Scope indemnity exclusively to third-party IP infringement and mandate procedural defense protections."
+    },
+    "jurisdiction_dispute_resolution": {
+      "name": "Governing Law & Dispute Resolution",
+      "keywords": ["governing law", "jurisdiction", "arbitration", "dispute resolution", "courts of", "venue", "seat of arbitration"],
+      "standard_rule": "Governing law in a recognized neutral jurisdiction with tiered dispute resolution: good-faith senior executive negotiation (15 days), followed by institutional or binding arbitration (e.g. Arbitration & Conciliation Act 1996 / SIAC / ICC) with express seat and language specified.",
+      "red_triggers": [
+        "foreign adverse courts",
+        "waiver of injunctive relief",
+        "exclusive jurisdiction of opposing party country without arbitration",
+        "jury trial waiver"
+      ],
+      "amber_triggers": [
+        "ad-hoc arbitration without designated rules",
+        "undefined seat of arbitration",
+        "asymmetrical dispute forum"
+      ],
+      "green_triggers": [
+        "arbitration in accordance with",
+        "seat of arbitration shall be",
+        "governing law of",
+        "courts at new delhi",
+        "courts at mumbai",
+        "courts at bengaluru"
+      ],
+      "fallback_clause": "This Agreement shall be governed by and construed in accordance with the laws of [Jurisdiction/India], without regard to conflict of law principles. Any dispute arising out of or in connection with this Agreement shall first be escalated to senior management for amicable resolution. If unresolved within thirty (30) days, the dispute shall be finally settled by binding arbitration in accordance with the Arbitration and Conciliation Act, 1996 by a sole arbitrator mutually appointed by the parties. The seat and venue of arbitration shall be [City/New Delhi/Bengaluru], and proceedings shall be conducted in English.",
+      "guidance": "Avoid foreign litigation forums where local legal representation costs are prohibitive. Insist on local domestic law or neutral arbitration seat."
+    },
+    "confidentiality": {
+      "name": "Confidentiality & Non-Disclosure",
+      "keywords": ["confidential information", "non-disclosure", "proprietary information", "trade secrets", "standard of care"],
+      "standard_rule": "Mutual confidentiality obligation with standard degree of care (reasonable / same as own), 3 to 5 year standard term, indefinite protection for bona fide trade secrets, and standard carve-outs (public knowledge, prior possession, independent development, court compulsion).",
+      "red_triggers": [
+        "unilateral confidentiality",
+        "perpetual term for ordinary information",
+        "no carve-outs for public information",
+        "strict liability standard of care"
+      ],
+      "amber_triggers": [
+        "term exceeding 5 years for general data",
+        "unreasonable notification windows for subpoenas (< 24 hours)"
+      ],
+      "green_triggers": [
+        "mutual confidentiality",
+        "reasonable standard of care",
+        "3 years from disclosure",
+        "publicly known through no fault",
+        "independently developed"
+      ],
+      "fallback_clause": "Each party agrees to protect the Confidential Information of the other party with the same degree of care it uses for its own confidential information of like nature, but not less than a reasonable standard of care. Confidential Information shall not include information that: (a) is or becomes publicly known without breach; (b) was known to receiving party prior to disclosure; (c) is independently developed without reference to disclosing party's information; or (d) is required to be disclosed by law. The obligations herein shall survive for a period of three (3) years from disclosure.",
+      "guidance": "Ensure mutual confidentiality and standard exclusions so ongoing business operations and clean-room developments are not tainted."
+    },
+    "intellectual_property": {
+      "name": "Intellectual Property Ownership & Licensing",
+      "keywords": ["intellectual property", "ownership", "work made for hire", "background ip", "deliverables", "license grant", "moral rights"],
+      "standard_rule": "Customer owns bespoke customized deliverables created under a statement of work upon receipt of full payment. Vendor retains all rights in pre-existing background IP, software tools, frameworks, and generalized methodologies, granting Customer a perpetual non-exclusive license to use background IP embedded in deliverables.",
+      "red_triggers": [
+        "assignment of all vendor pre-existing ip",
+        "assignment of background tools",
+        "assignment effective prior to full payment",
+        "exclusive license to vendor generic tools"
+      ],
+      "amber_triggers": [
+        "ambiguous distinction between background ip and deliverables",
+        "unclear patent license rights"
+      ],
+      "green_triggers": [
+        "vendor retains all background ip",
+        "customer owns bespoke deliverables",
+        "perpetual non-exclusive license to use",
+        "upon receipt of full payment"
+      ],
+      "fallback_clause": "Upon receipt of full payment, Customer shall own all right, title, and interest in the bespoke customized Deliverables created specifically for Customer under this Agreement. Vendor retains all right, title, and interest in its pre-existing IP, software tools, methodologies, and know-how ('Background IP'). To the extent Background IP is incorporated into Deliverables, Vendor grants Customer a perpetual, irrevocable, worldwide, non-exclusive, royalty-free license to use, execute, and display such Background IP solely as part of the Deliverables.",
+      "guidance": "Never assign core tools, code libraries, or underlying platform architecture. Differentiate between bespoke deliverables and pre-existing background IP."
+    },
+    "termination": {
+      "name": "Termination & Suspension Rights",
+      "keywords": ["termination for cause", "termination for convenience", "material breach", "cure period", "notice of termination"],
+      "standard_rule": "Termination for cause upon thirty (30) days prior written notice and opportunity to cure. Immediate termination only for incurable breach, insolvency, or gross misconduct. Termination for convenience permitted with reasonable advance notice (30 to 60 days) with payment for all work performed to date.",
+      "red_triggers": [
+        "immediate unilateral termination without cause",
+        "no cure period for breach",
+        "penalty on termination for convenience",
+        "no payment for work completed prior to termination"
+      ],
+      "amber_triggers": [
+        "asymmetrical cure periods",
+        "notice period under 15 days for material breach"
+      ],
+      "green_triggers": [
+        "30 days written notice and cure period",
+        "material breach",
+        "payment for services rendered to date",
+        "insolvency bankruptcy"
+      ],
+      "fallback_clause": "Either party may terminate this Agreement: (a) for cause upon thirty (30) days prior written notice if the other party materially breaches any provision and fails to cure such breach within the thirty-day period; or (b) immediately if the other party becomes insolvent, files for bankruptcy, or dissolves. Upon termination, Customer shall promptly pay Vendor for all services rendered and approved expenses incurred up to the effective date of termination.",
+      "guidance": "Ensure a mandatory 30-day cure period for material breach and guaranteed pro-rata compensation for work completed."
+    }
+  }
+}

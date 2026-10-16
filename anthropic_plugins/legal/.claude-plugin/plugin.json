@@ -1,0 +1,8 @@
+{
+  "name": "legal",
+  "version": "1.0.0",
+  "description": "Anthropic Knowledge Work Plugin: Review contracts, triage NDAs, navigate compliance, and assess risk.",
+  "author": {
+    "name": "Anthropic (Mirrored locally)"
+  }
+}

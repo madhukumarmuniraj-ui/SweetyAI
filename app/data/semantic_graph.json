@@ -1,0 +1,27 @@
+{
+  "nodes": [
+    {
+      "id": "stat73",
+      "type": "Statute",
+      "properties": {
+        "name": "Section 73 Indian Contract Act"
+      }
+    },
+    {
+      "id": "caseX",
+      "type": "Precedent",
+      "properties": {
+        "name": "Case X"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "caseX",
+      "target": "stat73",
+      "type": "CITES",
+      "properties": {},
+      "weight": 1.0
+    }
+  ]
+}

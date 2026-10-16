@@ -1,0 +1,27 @@
+{
+  "campaign_niche": "Criminal Conspiracy and Section 41A Arrest Safeguards",
+  "generated_at": "2026-10-14 04:10:01",
+  "grounded_authorities": [
+    "Indian Penal Code, 1860",
+    "24/7 Auto-Ingest (sc_arnesh_kumar_41a_crpc.txt)",
+    "KSLU Criminal Law Notes"
+  ],
+  "qualified_lead_segments": [
+    {
+      "segment_id": "LEAD-SEG-01",
+      "profile": "Pre-Arrest / Section 41A CrPC (Section 35 BNSS) Notice Recipients",
+      "jurisdiction": "Bengaluru / High Court of Karnataka",
+      "urgency_score": 95,
+      "automated_intake_hook": "Immediate statutory compliance audit under Arnesh Kumar v. State of Bihar",
+      "conversion_action": "Schedule emergency consultation + generate IRAC defence memo"
+    },
+    {
+      "segment_id": "LEAD-SEG-02",
+      "profile": "Corporate / Commercial Dispute & Criminal Conspiracy (Sec 120A IPC) Defense",
+      "jurisdiction": "Trial & Appellate Forums",
+      "urgency_score": 88,
+      "automated_intake_hook": "Ingredient-by-ingredient FIR scrutiny for absence of unlawful agreement",
+      "conversion_action": "Dispatch automated intake questionnaire & document checklist"
+    }
+  ]
+}

@@ -1,0 +1,254 @@
+[
+  {
+    "timestamp": "2026-10-03T22:39:07.046690",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "hello sweety",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-03T22:39:57.103298",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "web_research",
+    "confidence": 0.75,
+    "query_pattern": "oauth<NUM>, webhooks, and rate limiting",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-03T22:42:10.174251",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "is this all free to use in my project",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-03T22:49:54.488606",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "video editing and audio editing tools are available in your directory",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-03T22:51:43.576240",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "yes",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-03T23:04:08.643412",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "pinokio",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-03T16:31:14Z",
+    "domain": "mathematical",
+    "complexity": 0.6,
+    "intent": "mathematical_reasoning",
+    "confidence": 0.9,
+    "query_pattern": "solve quadratic equation x^<NUM> + <NUM>x + <NUM> = <NUM>",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T02:00:28.246332",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "hello",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T02:26:07.863046",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "hello",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T02:27:14.618659",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "who are you",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T02:28:18.571808",
+    "domain": "legal",
+    "complexity": 0.45,
+    "intent": "web_research",
+    "confidence": 0.75,
+    "query_pattern": "deep knowledge graphs (leveraging neo<NUM>j)\nvisual relationship mapping: since your codebase already includes stubs for neo<NUM>j and vector databases, you can build a semantic graph engine that maps",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-03T16:31:14Z",
+    "domain": "mathematical",
+    "complexity": 0.6,
+    "intent": "mathematical_reasoning",
+    "confidence": 0.9,
+    "query_pattern": "solve quadratic equation x^<NUM> + <NUM>x + <NUM> = <NUM>",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T03:51:04.600429",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "hello who are you",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T18:34:42.882795",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "hello",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T18:36:53.880355",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "hello",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T18:38:01.015894",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "hello",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T18:39:18.484311",
+    "domain": "creative",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "can you read and show recent history",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T18:45:30.791510",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "hello",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T18:47:02.270685",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "what are you",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T18:48:08.597614",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "what are you capabalities and tools and featues",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T20:09:15.283303",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "hello",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T20:26:50.398984",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "hello",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T20:31:37.878700",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "hello",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T20:32:35.451626",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "hello",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T20:38:18.531921",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "hello",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T20:52:58.796816",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "change your language to kannada and tell me about yourself in kannada",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T21:09:17.318511",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "[language & tone: please reply warmly and fluently in tamil (தமிழ்). embody high intelligence, emotional warmth, empathy, and friendly charm.]\n\nhello",
+    "successful": true
+  },
+  {
+    "timestamp": "2026-10-04T21:09:50.498627",
+    "domain": "general",
+    "complexity": 0.0,
+    "intent": "general_reasoning",
+    "confidence": 0.75,
+    "query_pattern": "[tone: please respond with deep intellectual quotient (iq), emotional warmth (eq), empathy, and genuine friendly human charm.]\n\nhello",
+    "successful": true
+  }
+]
