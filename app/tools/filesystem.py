@@ -1,19 +1,27 @@
+"""Project-relative filesystem tools for SweetyAI.
+
+All operations are confined to the active project root (see app.paths), which
+works on both the dev checkout and frozen/portable installs.
+"""
+
 from pathlib import Path
 
-
-PROJECT_ROOT = Path(r"C:\SweetyAI").resolve()
+from app.paths import project_root
 
 
 def safe_path(relative_path: str) -> Path:
     """
     Convert a project-relative path into a safe absolute path.
-    Prevents access outside C:\\SweetyAI.
+    Prevents access outside the SweetyAI project root.
     """
 
-    requested = (PROJECT_ROOT / relative_path).resolve()
+    root = project_root().resolve()
+    raw = Path(relative_path)
+
+    requested = raw.resolve() if raw.is_absolute() else (root / raw).resolve()
 
     try:
-        requested.relative_to(PROJECT_ROOT)
+        requested.relative_to(root)
     except ValueError:
         raise PermissionError(
             "Access outside the SweetyAI project is not allowed."

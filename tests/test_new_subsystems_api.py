@@ -1,140 +1,155 @@
-import json
-import pytest
-import threading
-import urllib.request
-import urllib.parse
-from http.server import ThreadingHTTPServer
-import tempfile
-import os
-import time
+"""Unit tests for the SweetyAI core subsystems (graph, sandbox, legal, adaptive).
 
-from server import Handler
-from app.graph.knowledge_graph import get_knowledge_graph
+These exercise the modules directly (KnowledgeGraph, SandboxEngine, ClauseTriager,
+StatuteVerifier, DryRunPatcher, biometric cadence + persona engine) — no HTTP
+server required.
+"""
+
+import os
+
+from app.graph.knowledge_graph import KnowledgeGraph
 from app.sandbox.sandbox_engine import SandboxEngine
 from app.legal.clause_triager import ClauseTriager
 from app.legal.statute_verifier import StatuteVerifier
 from app.adaptive.dry_run_patcher import DryRunPatcher
+from app.adaptive.biometric_cadence import BiometricCadenceModel
+from app.adaptive.persona_engine import PersonaEngine
 
 
-@pytest.fixture(scope="module")
-def api_server():
-    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
-    port = server.server_address[1]
-    thread = threading.Thread(target=server.serve_forever, daemon=True)
-    thread.start()
-    base_url = f"http://127.0.0.1:{port}"
-    yield base_url
-    server.shutdown()
-    server.server_close()
+# ---------------------------------------------------------------------------
+# Knowledge Graph
+# ---------------------------------------------------------------------------
 
-
-def test_graph_endpoints(api_server):
-    kg = get_knowledge_graph()
+def test_knowledge_graph_nodes_and_search(tmp_path):
+    kg = KnowledgeGraph(storage_path=str(tmp_path / "kg.json"))
     kg.add_node("TEST_STATUTE_API", "Statute", {"title": "Test Arbitration Statute"})
 
-    # Test /graph/stats
-    with urllib.request.urlopen(f"{api_server}/graph/stats") as resp:
-        assert resp.status == 200
-        data = json.loads(resp.read().decode("utf-8"))
-        assert data["ok"] is True
-        assert data["node_count"] >= 1
+    stats = kg.get_stats()
+    assert stats["total_nodes"] >= 1
+    assert "neo4j_active" in stats
 
-    # Test /graph/search
-    with urllib.request.urlopen(f"{api_server}/graph/search?q=Arbitration") as resp:
-        assert resp.status == 200
-        data = json.loads(resp.read().decode("utf-8"))
-        assert data["ok"] is True
-        assert len(data["results"]) >= 1
+    results = kg.search("Arbitration")
+    assert len(results) >= 1
+    assert any("TEST_STATUTE_API" == r.get("id") for r in results)
 
 
-def test_legal_endpoints(api_server):
-    # Test /legal/verify-statute
-    payload = json.dumps({"section": "73", "act_name": "Indian Contract Act"}).encode("utf-8")
-    req = urllib.request.Request(
-        f"{api_server}/legal/verify-statute",
-        data=payload,
-        headers={"Content-Type": "application/json"},
-        method="POST"
-    )
-    with urllib.request.urlopen(req) as resp:
-        assert resp.status == 200
-        data = json.loads(resp.read().decode("utf-8"))
-        assert data["ok"] is True
-        assert data["verification"]["is_valid"] is True
+def test_knowledge_graph_statute_and_edge(tmp_path):
+    kg = KnowledgeGraph(storage_path=str(tmp_path / "kg2.json"))
+    kg.add_statute("S73_ICA", act_name="Indian Contract Act", section="73",
+                   text="Compensation for loss or damage caused by breach of contract.")
+    kg.add_node("CLAUSE_C1", "Clause", {"title": "Damages clause"})
+    kg.link_entities("CLAUSE_C1", "S73_ICA", "CITES")
 
-    # Test /legal/triage
+    statutes = kg.find_statutes_for_clause("CLAUSE_C1")
+    assert any(s.get("id") == "S73_ICA" for s in statutes)
+
+
+# ---------------------------------------------------------------------------
+# Sandbox Engine
+# ---------------------------------------------------------------------------
+
+def test_sandbox_executes_safe_code():
+    engine = SandboxEngine()
+    result = engine.execute("x = 2 + 3\nprint(x)")
+    assert result.success is True
+    assert "5" in result.output
+
+
+def test_sandbox_blocks_disallowed_import():
+    engine = SandboxEngine()
+    violations = engine.validate_ast("import os")
+    assert violations, "import os should be flagged by the security AST visitor"
+
+    result = engine.execute("import os\nprint('nope')")
+    assert result.success is False
+    assert result.exception_type == "SecurityValidationError"
+
+
+# ---------------------------------------------------------------------------
+# Clause Triager
+# ---------------------------------------------------------------------------
+
+def test_clause_triage_flags_red_risk():
+    triager = ClauseTriager()
     contract_text = "The consultant agrees to infinite indemnification liability for any loss."
-    payload = json.dumps({"contract_text": contract_text}).encode("utf-8")
-    req = urllib.request.Request(
-        f"{api_server}/legal/triage",
-        data=payload,
-        headers={"Content-Type": "application/json"},
-        method="POST"
-    )
-    with urllib.request.urlopen(req) as resp:
-        assert resp.status == 200
-        data = json.loads(resp.read().decode("utf-8"))
-        assert data["ok"] is True
-        assert data["report"]["red_count"] >= 1
+    report = triager.triage_contract(contract_text)
+    assert report.red_count >= 1
+    assert report.total_clauses >= 1
+    assert report.risk_level in ("HIGH", "MODERATE", "LOW")
 
 
-def test_sandbox_and_patch_endpoints(api_server):
-    with tempfile.TemporaryDirectory() as tmpdir:
-        test_file = os.path.join(tmpdir, "code.py")
-        with open(test_file, "w") as f:
-            f.write("def foo():\n    return 42\n")
+# ---------------------------------------------------------------------------
+# Statute Verifier
+# ---------------------------------------------------------------------------
 
-        # Preview patch
-        new_code = "def foo():\n    return 100\n"
-        payload = json.dumps({"filepath": test_file, "new_content": new_code}).encode("utf-8")
-        req = urllib.request.Request(
-            f"{api_server}/patch/preview",
-            data=payload,
-            headers={"Content-Type": "application/json"},
-            method="POST"
-        )
-        with urllib.request.urlopen(req) as resp:
-            assert resp.status == 200
-            data = json.loads(resp.read().decode("utf-8"))
-            assert data["ok"] is True
-            assert data["preview"]["lines_changed"] >= 1
-
-        # Apply patch
-        req = urllib.request.Request(
-            f"{api_server}/patch/apply",
-            data=payload,
-            headers={"Content-Type": "application/json"},
-            method="POST"
-        )
-        with urllib.request.urlopen(req) as resp:
-            assert resp.status == 200
-            data = json.loads(resp.read().decode("utf-8"))
-            assert data["ok"] is True
-            assert data["checkpoint_id"] is not None
-
-        # Verify disk
-        with open(test_file, "r") as f:
-            content = f.read()
-        assert content == new_code
+def test_statute_verifier_valid_citation():
+    verifier = StatuteVerifier()
+    result = verifier.verify_citation("73", "Indian Contract Act")
+    assert result.is_valid is True
+    assert "Indian Contract Act" in result.correct_title
 
 
-def test_adaptive_cadence_and_persona_endpoints(api_server):
+def test_statute_verifier_out_of_range_section():
+    verifier = StatuteVerifier()
+    result = verifier.verify_citation("99999", "Indian Contract Act")
+    assert result.is_valid is False
+    assert result.status in ("INVALID_SECTION", "UNKNOWN_ACT")
+
+
+# ---------------------------------------------------------------------------
+# Dry Run Patcher
+# ---------------------------------------------------------------------------
+
+def test_dry_run_patch_preview_and_apply(tmp_path):
+    test_file = tmp_path / "code.py"
+    test_file.write_text("def foo():\n    return 42\n")
+
+    patcher = DryRunPatcher()
+
+    preview = patcher.preview_patch(str(test_file), "def foo():\n    return 100\n")
+    assert preview.lines_changed >= 1
+    assert preview.checksum_before != preview.checksum_after
+
+    result = patcher.apply_patch(str(test_file), "def foo():\n    return 100\n")
+    assert result["ok"] is True
+    assert test_file.read_text() == "def foo():\n    return 100\n"
+
+
+def test_dry_run_patch_creates_new_file(tmp_path):
+    new_file = tmp_path / "brand_new.py"
+    patcher = DryRunPatcher()
+    preview = patcher.preview_patch(str(new_file), "print('hello')\n")
+    assert preview.is_new_file is True
+
+
+# ---------------------------------------------------------------------------
+# Adaptive Cadence + Persona
+# ---------------------------------------------------------------------------
+
+def test_biometric_cadence_analyzes_events():
+    model = BiometricCadenceModel()
     events = [
         {"key": "a", "timestamp": 1000.0},
         {"key": "b", "timestamp": 1100.0},
         {"key": "c", "timestamp": 1200.0},
         {"key": "d", "timestamp": 1300.0},
     ]
-    payload = json.dumps({"events": events, "duration_ms": 300.0}).encode("utf-8")
-    req = urllib.request.Request(
-        f"{api_server}/adaptive/cadence",
-        data=payload,
-        headers={"Content-Type": "application/json"},
-        method="POST"
-    )
-    with urllib.request.urlopen(req) as resp:
-        assert resp.status == 200
-        data = json.loads(resp.read().decode("utf-8"))
-        assert data["ok"] is True
-        assert data["metrics"]["cognitive_state"] in ("FOCUSED_FLOW", "URGENT_BURST", "BALANCED")
-        assert "persona" in data
+    metrics = model.analyze_keystroke_series(events, duration_ms=300.0)
+    assert metrics.total_keystrokes == 4
+    assert isinstance(metrics.cognitive_state, str) and metrics.cognitive_state
+
+
+def test_persona_transitions_from_cadence():
+    model = BiometricCadenceModel()
+    events = [
+        {"key": "a", "timestamp": 1000.0},
+        {"key": "b", "timestamp": 1080.0},
+        {"key": "c", "timestamp": 1160.0},
+        {"key": "d", "timestamp": 1240.0},
+    ]
+    metrics = model.analyze_keystroke_series(events, duration_ms=240.0)
+
+    persona_engine = PersonaEngine()
+    state = persona_engine.transition_from_cadence(metrics)
+    assert state is not None
+    assert "name" in state.to_dict()

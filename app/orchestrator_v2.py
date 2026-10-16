@@ -16,7 +16,10 @@ import re
 import json
 from typing import TypedDict, List, Dict, Any, Optional
 from datetime import datetime
-from langgraph.graph import StateGraph, START, END
+try:
+    from langgraph.graph import StateGraph, START, END
+except ImportError:  # langgraph not installed — use the built-in sequential shim
+    from app.langgraph_shim import StateGraph, START, END
 from app.memory import get_recent_history, add_message
 from rag import search_knowledge_base
 from app.tools import AVAILABLE_TOOLS

@@ -1,16 +1,17 @@
 from pathlib import Path
 
 
-PROJECT_ROOT = Path(r"C:\SweetyAI").resolve()
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def safe_path(relative_path: str) -> Path:
     """
     Convert a project-relative path into a safe absolute path.
-    Prevents access outside C:\\SweetyAI.
+    Prevents access outside the SweetyAI project root.
     """
 
-    requested = (PROJECT_ROOT / relative_path).resolve()
+    raw = Path(relative_path)
+    requested = raw.resolve() if raw.is_absolute() else (PROJECT_ROOT / raw).resolve()
 
     try:
         requested.relative_to(PROJECT_ROOT)

@@ -411,9 +411,8 @@ def handle_bail_cli(argv):
     )
     parser.add_argument(
         "--type",
-        choices=["480", "482", "483"],
         default="482",
-        help="480 (Magistrate Regular Bail), 482 (Anticipatory Bail), 483 (Sessions/HC Regular Bail)",
+        help="480 (Magistrate Regular Bail), 482 (Anticipatory Bail), 483 (Sessions/HC Regular Bail); aliases 'regular', 'anticipatory', 'default' accepted",
     )
     parser.add_argument(
         "--forum",
@@ -432,6 +431,15 @@ def handle_bail_cli(argv):
     parser.add_argument("--from-file", default=None, help="Extract FIR/complaint facts from a PDF, DOCX, MD, or TXT file")
     parser.add_argument("--latest", action="store_true", help="Automatically extract FIR/case facts from the newest file in ~/Downloads")
     args = parser.parse_args(argv)
+
+    _type_aliases = {
+        "regular": "480", "bail": "480", "sec480": "480", "480": "480",
+        "anticipatory": "482", "482": "482", "pre-arrest": "482",
+        "default": "483", "483": "483",
+    }
+    args.type = _type_aliases.get(str(args.type).strip().lower(), args.type)
+    if args.type not in ("480", "482", "483"):
+        parser.error(f"argument --type: invalid value '{args.type}' (choose from 480, 482, 483, or aliases regular/anticipatory/default)")
 
     source_file = get_latest_download() if args.latest else args.from_file
 

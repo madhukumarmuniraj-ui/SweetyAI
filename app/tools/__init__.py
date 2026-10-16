@@ -14,7 +14,7 @@ from .clipboard import read_clipboard_text, write_clipboard_text
 from .desktop_automation import open_application, get_system_info
 
 # Advanced Tools
-# from . import computer_control
+from . import computer_control
 from . import browser_automation
 from . import document_processing
 from . import image_processing
