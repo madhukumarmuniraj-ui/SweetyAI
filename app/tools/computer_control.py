@@ -17,6 +17,11 @@ import json
 # -----------------------------------------------------------------------------
 
 try:
+    # python-xlib warns "no xauthority details available" when ~/.Xauthority
+    # has no entry for the display; harmless, but noisy at import time.
+    import logging as _logging
+    _logging.getLogger("Xlib.xauth").setLevel(_logging.ERROR)
+
     import pyautogui
     PYAUTOGUI_AVAILABLE = True
     # Safety settings
