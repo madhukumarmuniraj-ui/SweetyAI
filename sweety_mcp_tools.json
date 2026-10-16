@@ -1,0 +1,83 @@
+{
+  "mcp_version": "2026.1",
+  "server_name": "sweetyai-indian-legal-suite",
+  "tools": [
+    {
+      "name": "sweety_full_case_audit",
+      "description": "Runs the 6-stage Master Case Packet Pipeline (Privacy/BSA Sec 132, 6-Pillar Indian Contract Playbook, Citation/BNS/BNSS Verifier, High Court Synopsis & Chronology, Sec 63(4) BSA SHA-256 Certificate, and A4 Export).",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Path to PDF, DOCX, MD, or TXT file"
+          },
+          "jurisdiction": {
+            "type": "string",
+            "enum": [
+              "crlp",
+              "wp",
+              "rfa",
+              "comm"
+            ]
+          }
+        },
+        "required": [
+          "file"
+        ]
+      }
+    },
+    {
+      "name": "sweety_docx_track_changes",
+      "description": "Generates a native Microsoft Word .docx file with real OpenXML Track Changes (<w:ins> and <w:del>) and Karnataka High Court A4 margins.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "original_file": {
+            "type": "string"
+          },
+          "modified_file": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "original_file",
+          "modified_file"
+        ]
+      }
+    },
+    {
+      "name": "sweety_xlsx_claim_schedule",
+      "description": "Generates a formula-driven Excel .xlsx Commercial Suit / Arbitration / NI Act interest calculation sheet under Order VII Rule 2A CPC.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "principal": {
+            "type": "number"
+          },
+          "rate": {
+            "type": "number"
+          },
+          "start_date": {
+            "type": "string",
+            "description": "YYYY-MM-DD"
+          },
+          "regime": {
+            "type": "string",
+            "enum": [
+              "sec34_cpc",
+              "ni138_sec80",
+              "msmed_sec16",
+              "arb_sec31_7"
+            ]
+          }
+        },
+        "required": [
+          "principal",
+          "rate",
+          "start_date"
+        ]
+      }
+    }
+  ]
+}

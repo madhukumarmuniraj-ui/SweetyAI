@@ -1,0 +1,21 @@
+{
+  "name": "sweety-ai",
+  "private": true,
+  "version": "0.2.0",
+  "description": "Sweety AI - Intelligent Desktop Assistant & Legal Copilot",
+  "main": "electron-main.js",
+  "author": "Shiv",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "start": "npx electron .",
+    "backend": "python server.py",
+    "desktop": "npm run build && concurrently -k -s first \"python server.py\" \"npm run start\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "electron": "^44.5.1",
+    "electron-builder": "^24.13.3",
+    "vite": "^5.0.0"
+  }
+}
