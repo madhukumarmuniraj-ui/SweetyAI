@@ -1,22 +1,27 @@
+#!/home/madhukumarm/SweetyAI/venv/bin/python3
+import os
+import sys
 import time
-import subprocess
+import sqlite3
 from datetime import datetime
 
-print("=========================================================================")
-print("     SWEETYAI LOCAL BACKGROUND SCHEDULER & MORNING BRIEFING DAEMON         ")
-print("=========================================================================")
-print(" -> Running 24/7 in local memory (Air-Gapped | Zero Telemetry)")
-print(" -> Scheduled Trigger: Every day at 08:30 AM\n")
+BASE_DIR = "/home/madhukumarm/SweetyAI"
+os.chdir(BASE_DIR)
 
-while True:
-    now = datetime.now()
-    if now.hour == 8 and now.minute == 30:
-        dt_str = now.strftime('%Y-%m-%d %H:%M:%S')
-        print(f"[{dt_str}] Triggering Scheduled Morning Briefing...")
+def run_daemon_loop():
+    pid_file = os.path.join(BASE_DIR, "sweety_proactive_daemon.pid")
+    with open(pid_file, "w") as f:
+        f.write(str(os.getpid()))
+
+    while True:
         try:
-            subprocess.run(["python3", "sweety.py", "diary", "briefing", "--notify"], check=False)
-        except Exception as e:
-            print(f"[Error] Failed to run briefing: {e}")
-        time.sleep(60)
-    else:
+            # Update daemon heartbeat state
+            state_file = os.path.join(BASE_DIR, "sweety_daemon_state.json")
+            with open(state_file, "w", encoding="utf-8") as f:
+                f.write(f'{{"status": "ONLINE", "pid": {os.getpid()}, "last_heartbeat": "{datetime.now().isoformat()}", "modules_active": 36}}\n')
+        except Exception:
+            pass
         time.sleep(30)
+
+if __name__ == "__main__":
+    run_daemon_loop()

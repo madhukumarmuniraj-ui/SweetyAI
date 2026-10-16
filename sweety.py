@@ -89,7 +89,7 @@ if len(_sys.argv) > 1:
             pdir = "anthropic_plugins"
             if not _os.path.exists(pdir):
                 setup_knowledge_plugins()
-            print("\n=== Installed Anthropic Knowledge-Work Plugins ===")
+            print("=== Installed Anthropic Knowledge-Work Plugins ===")
             for p in _os.listdir(pdir):
                 mp = _os.path.join(pdir, p, ".claude-plugin", "plugin.json")
                 if _os.path.exists(mp):
