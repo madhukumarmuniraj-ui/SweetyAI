@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SweetyAI</title>
+</head>
+<body>
+  <div id="app-container">
+    <div id="coucou-logo-wrapper" title="Click to toggle chat!">
+      <div class="sweety-core" id="sweety-logo">
+        <div class="sweety-eye"><div class="sweety-eyelid"></div></div>
+        <div class="sweety-eye"><div class="sweety-eyelid"></div></div>
+      </div>
+    </div>
+
+    <div id="sweety-chatbox" aria-label="SweetyAI chat">
+      <div class="chat-messages" id="chat-messages">
+        <div class="message msg-ai">Hi! I'm Sweety. Need help? 👋</div>
+      </div>
+
+      <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Type here..." autocomplete="off" />
+        <button id="send-btn" type="button">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

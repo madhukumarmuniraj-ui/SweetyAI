@@ -1,0 +1,17 @@
+[package]
+name = "sweetyai_ui"
+version = "0.1.0"
+description = "SweetyAI top-edge assistant UI"
+authors = ["SweetyAI"]
+edition = "2021"
+rust-version = "1.77"
+
+[build-dependencies]
+tauri-build = { version = "2.3.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.3.0", features = [] }
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
