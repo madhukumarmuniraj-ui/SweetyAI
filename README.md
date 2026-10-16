@@ -1,4 +1,4 @@
-<p align="center"><img src="logo.svg" width="120" alt="SweetyAI logo"></p>
+<p align="center"><img src="assets/logo.png" width="120" alt="SweetyAI logo"></p>
 
 # SWEETYAI ENTERPRISE LEGAL WORKSTATION (INDIA — 108 MODULES)
 **A Secure, Air-Gapped, Automated Legal-Tech & Litigation Suite for Indian Legal Professionals**
