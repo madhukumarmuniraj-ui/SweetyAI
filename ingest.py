@@ -1,5 +1,5 @@
 import os
-from rag import add_document_to_db
+from rag import ingest_document as add_document_to_db
 
 def ingest_folder(folder_path="./docs"):
     """Reads all text files from a folder and adds them to ChromaDB."""

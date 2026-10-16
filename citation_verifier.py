@@ -37,3 +37,15 @@ if __name__ == "__main__":
     print(verifier.verify_citation("Section 420 IPC"))
     print(verifier.verify_citation("Section 154 CrPC"))
     print(verifier.verify_citation("Section 138 NI Act"))
+
+def handle_verify_cli(args):
+    verifier = CitationVerifier()
+    target = " ".join(args) if args else "Section 316 BNS"
+    result = verifier.verify_citation(target)
+    print(result)
+    import os
+    os.makedirs("citation_audit_reports", exist_ok=True)
+    out_path = "citation_audit_reports/citation_audit_sample_contract.md"
+    with open(out_path, "w") as out:
+        out.write(f"# Citation Verification Audit\n\nQuery: {target}\n\nResult:\n{result}\n")
+    print(f"[CitationVerifier] Saved report to {out_path}")

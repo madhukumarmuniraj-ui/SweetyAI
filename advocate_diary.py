@@ -486,3 +486,52 @@ def handle_diary_cli(args):
 
 if __name__ == "__main__":
     handle_diary_cli(sys.argv[1:])
+
+
+def sync_to_root_db():
+    """Automatically mirrors diary_data/advocate_diary.db hearings into root sweety_cases.db."""
+    try:
+        import sqlite3, os
+        d_path = os.path.join("diary_data", "advocate_diary.db")
+        if not os.path.exists(d_path):
+            return
+        d_conn = sqlite3.connect(d_path)
+        d_cur = d_conn.cursor()
+        d_cur.execute("PRAGMA table_info(hearings);")
+        cols = [c[1] for c in d_cur.fetchall()]
+        d_cur.execute("SELECT * FROM hearings;")
+        rows = d_cur.fetchall()
+
+        r_conn = sqlite3.connect("sweety_cases.db")
+        r_cur = r_conn.cursor()
+        r_cur.execute("""CREATE TABLE IF NOT EXISTS cases (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            case_number TEXT NOT NULL,
+            client_name TEXT NOT NULL,
+            court TEXT NOT NULL,
+            hearing_date TEXT NOT NULL,
+            status TEXT NOT NULL
+        )""")
+        r_cur.execute("DELETE FROM cases;")
+        for r in rows:
+            rd = dict(zip(cols, r))
+            r_cur.execute(
+                "INSERT INTO cases (case_number, client_name, court, hearing_date, status) VALUES (?, ?, ?, ?, ?)",
+                (
+                    rd.get("case_no") or rd.get("case_number") or "Unknown",
+                    rd.get("client_name") or rd.get("parties") or "Client",
+                    rd.get("court") or rd.get("forum") or "Court",
+                    rd.get("next_date") or rd.get("hearing_date") or "TBD",
+                    rd.get("stage") or rd.get("status") or "Active"
+                )
+            )
+        r_conn.commit()
+        d_conn.close()
+        r_conn.close()
+    except Exception:
+        pass
+
+_orig_show_morning_briefing = show_morning_briefing
+def show_morning_briefing(*args, **kwargs):
+    sync_to_root_db()
+    return _orig_show_morning_briefing(*args, **kwargs)

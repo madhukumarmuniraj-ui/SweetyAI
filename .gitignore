@@ -1,0 +1,134 @@
+# ============ Python ============
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ============ Virtual environments ============
+venv/
+.venv/
+env/
+
+# ============ Node ============
+node_modules/
+
+# ============ Rust / Tauri build output ============
+/src/target/
+/v18/src-tauri/target/
+/ui_refresh/SweetyAI-frontend/src-tauri/target/
+/compact_ui/SweetyAI-compact-ui/src-tauri/target/
+
+# ============ Local models & bundled binaries ============
+SweetyAI-Core/
+/models/
+*.safetensors
+ffmpeg.exe
+
+# ============ Builds & distributions ============
+backend_dist/
+build_pyinstaller/
+/dist/
+/build/
+
+# ============ Databases, state & caches ============
+*.db
+*.sqlite
+*.sqlite3
+*.pid
+chat_history.json
+memory.json
+sweety_daemon_state.json
+cache_small/
+checkpoints/
+diary_data/
+agent_workspace/
+
+# ============ Secrets & private config (never commit) ============
+.env
+.env.*
+/searxng/
+/social_config/
+
+# ============ IDE / editors / OS ============
+.vs/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.claude/
+.freebuff/
+
+# ============ Logs & screenshots ============
+*.log
+vision_logs/
+sweety_screen_capture.png
+workstation_snapshot.png
+
+# ============ Local RAG / knowledge data ============
+chroma_db/
+sweety_vectordb/
+sweetyai_legal_db/
+knowledge_base_docs/
+precedents/
+precedents.index
+precedents_docs.txt
+
+# ============ Generated legal output (local only) ============
+arbitration_petitions/
+bail_petitions/
+chronology_outputs/
+citation_audit_reports/
+commercial_suits/
+consumer_petitions/
+contract_review_reports/
+contract_reviews/
+court_pleadings/
+court_ready_exports/
+criminal_appeals/
+cross_examination_matrices/
+custody_bail_reports/
+cyber_notices/
+excel_claim_schedules/
+filing_forms/
+fir_audit_reports/
+hc_quashing_petitions/
+ibc_nclt_petitions/
+ibc_sec7_petitions/
+ipr_notices/
+labour_claims/
+legal_inbox/
+mact_petitions/
+master_case_dossiers/
+nda_triage_reports/
+ni138_complaints/
+parallel_precedent_outputs/
+privacy_audit_reports/
+redline_outputs/
+rera_petitions/
+risk_assessment_reports/
+sec63_certificates/
+stamp_duty_reports/
+swarm_outputs/
+trial_practice_outputs/
+valuation_slips/
+word_docx_exports/
+workspace_orchestrations/
+writ_petitions/
+
+# ============ Editor backups inside source ============
+*.agent-core-v1-backup
+*.pre-legacy-migration-backup*
+app/compiled_models/
+
+# ============ Misc local-only files ============
+*.bak
+/Legal Files
+/system_downloads
+/drafts/
+/archive/
+/sample_contract.txt
+/modified_contract.txt
+/running tools.txt
+/legal_brief*.md

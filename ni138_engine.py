@@ -350,3 +350,85 @@ def handle_ni138_cli(argv):
 
 if __name__ == "__main__":
     handle_ni138_cli(sys.argv[1:])
+
+
+# --- SANJABIJ TARI v. KISHORE S. BORCAR (2025 INSC 1158) MANDATORY SYNOPSIS UPGRADE ---
+_orig_generate_ni138_bundle = generate_ni138_bundle
+
+def generate_ni138_bundle(
+    complainant, accused, cheque_no, amount, cheque_date_str,
+    presentation_date_str, dishonour_date_str, notice_date_str,
+    service_date_str=None, drawee_bank='HDFC Bank Ltd., Bengaluru Branch',
+    payee_bank='State Bank of India, Bengaluru Branch',
+    return_reason='Funds Insufficient',
+    liability_desc='towards discharge of a legally enforceable debt and commercial liability'
+):
+    res = _orig_generate_ni138_bundle(
+        complainant, accused, cheque_no, amount, cheque_date_str,
+        presentation_date_str, dishonour_date_str, notice_date_str,
+        service_date_str=service_date_str, drawee_bank=drawee_bank,
+        payee_bank=payee_bank, return_reason=return_reason,
+        liability_desc=liability_desc
+    )
+    tl = compute_ni138_timeline(
+        cheque_date_str, presentation_date_str, dishonour_date_str,
+        notice_date_str, service_date_str
+    )
+    coa_date = tl.get("cause_of_action_date", "As computed")
+    lim_date = tl.get("complaint_filing_deadline", "Within 30 days of COA")
+    eff_service = service_date_str if service_date_str else tl.get("effective_service_date", "Deemed served")
+
+    sc_synopsis = f"""
+================================================================================
+MANDATORY STATUTORY SYNOPSIS (ANNEXURE TO COMPLAINT UNDER SECTION 138 NI ACT)
+[Prescribed by the Hon'ble Supreme Court in Sanjabij Tari v. Kishore S. Borcar,
+ 2025 INSC 1158 / 2025 SCC OnLine SC 2069 — Placed Immediately After Index]
+================================================================================
+I. PARTICULARS OF THE PARTIES:
+   (i)  Complainant : {complainant}
+   (ii) Accused     : {accused}
+
+II. CHEQUE DETAILS:
+   (i)   Cheque No.           : {cheque_no}
+   (ii)  Date of Cheque       : {cheque_date_str}
+   (iii) Cheque Amount        : INR {amount}
+   (iv)  Drawn on Bank/Branch : {drawee_bank}
+   (v)   Nature of Liability  : {liability_desc}
+
+III. DISHONOUR PARTICULARS:
+   (i)   Date of Presentation : {presentation_date_str}
+   (ii)  Date of Return Memo  : {dishonour_date_str}
+   (iii) Collection Bank      : {payee_bank}
+   (iv)  Reason for Dishonour : "{return_reason}"
+
+IV. STATUTORY LEGAL DEMAND NOTICE (SECTION 138(b) NI ACT):
+   (i)   Date of Notice       : {notice_date_str}
+   (ii)  Mode of Service      : RPAD / Speed Post & Electronic Mode (WhatsApp/Email)
+   (iii) Date of Service      : {eff_service}
+   (iv)  Whether Replied/Paid : Failed to comply within 15 days under Section 138(c)
+
+V. CAUSE OF ACTION & JURISDICTION:
+   (i)   Date of Accrual      : {coa_date} (Limitation runs up to {lim_date})
+   (ii)  Jurisdiction Invoked : Section 142(2)(a) NI Act ({payee_bank})
+   (iii) Connected Matters    : Nil pending between the same parties on this cheque
+
+VI. PROCEDURAL & INTERIM RELIEFS SOUGHT:
+   (i)   Exemption from Pre-Cognizance Summons: In terms of Sanjabij Tari v.
+         Kishore S. Borcar (2025 INSC 1158) read with Section 5 BNSS, 2023,
+         direct cognizance be taken without pre-cognizance notice under the
+         First Proviso to Section 223(1) BNSS.
+   (ii)  Hybrid Service of Summons: Permission to serve summons via Dasti,
+         RPAD, Email, and WhatsApp along with QR/UPI payment link.
+   (iii) Interim Compensation : 20% of cheque amount prayed under Section 143A NI Act.
+
+VII. FILED THROUGH:
+   Counsel for the Complainant (accompanied by Section 63 BSA, 2023 Certificate)
+================================================================================
+"""
+    if isinstance(res, dict) and "file_path" in res and os.path.exists(res["file_path"]):
+        with open(res["file_path"], "r", encoding="utf-8") as rf:
+            existing_text = rf.read()
+        with open(res["file_path"], "w", encoding="utf-8") as wf:
+            wf.write(sc_synopsis.lstrip() + "\n\n" + existing_text)
+        res["sanjabij_tari_2025_compliant"] = True
+    return res

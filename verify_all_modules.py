@@ -96,7 +96,7 @@ if len(_sys.argv) > 1:
             pdir = "anthropic_plugins"
             if not _os.path.exists(pdir):
                 setup_knowledge_plugins()
-            print("\\n=== Installed Anthropic Knowledge-Work Plugins ===")
+            print("=== Installed Anthropic Knowledge-Work Plugins ===")
             for p in _os.listdir(pdir):
                 mp = _os.path.join(pdir, p, ".claude-plugin", "plugin.json")
                 if _os.path.exists(mp):
@@ -108,7 +108,7 @@ if len(_sys.argv) > 1:
 
 if os.path.exists("sweety.py"):
     with open("sweety.py", "r", encoding="utf-8") as f:
-        sweety_code = f.read().replace("\u00a0", " ")
+        sweety_code = f.read().replace(" ", " ")
 
     router_pattern = re.compile(
         r"# --- SWEETYAI UNIFIED FAST-PATH ROUTER \(START\) ---.*?# --- SWEETYAI UNIFIED FAST-PATH ROUTER \(END\) ---",
