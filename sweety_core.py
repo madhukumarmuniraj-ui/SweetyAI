@@ -76,6 +76,24 @@ class DualModelRouter:
                     llm = Llama(model_path=target_model, n_ctx=n_ctx, n_threads=n_threads, n_gpu_layers=0, verbose=False)
                     cls._loaded[target_model] = llm
                 max_t = 128 if model_type == "small" else 300
+                try:
+                    # Prefer the chat template embedded in the GGUF (instruct models)
+                    out = llm.create_chat_completion(
+                        messages=[
+                            {"role": "system",
+                             "content": "You are Sweety, an offline Indian legal AI workstation assistant. "
+                                        + ("Provide deep, precise legal analysis." if model_type == "large"
+                                           else "Be concise and direct.")},
+                            {"role": "user",
+                             "content": f"Context:\n{context[:4000]}\n\n{prompt}" if context else prompt},
+                        ],
+                        max_tokens=max_t,
+                    )
+                    msg = out["choices"][0]["message"]["content"].strip()
+                    if msg:
+                        return msg
+                except Exception:
+                    pass
                 out = llm(full_prompt, max_tokens=max_t, stop=["User:", "\nUser:"])
                 if "choices" in out and out["choices"]:
                     return out["choices"][0]["text"].strip()
