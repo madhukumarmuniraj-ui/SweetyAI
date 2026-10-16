@@ -4,16 +4,18 @@
   "version": "0.1.0",
   "identifier": "com.sweety.ai",
   "build": {
-    "beforeDevCommand": "npm run dev",
-    "devUrl": "http://127.0.0.1:1420",
+    "beforeDevCommand": "npm --prefix .. run dev",
+    "devUrl": "http://127.0.0.1:5173",
+    "beforeBuildCommand": "npm --prefix .. run build",
     "frontendDist": "../dist"
   },
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "SweetyAI",
-        "width": 80,
-        "height": 80,
+        "width": 520,
+        "height": 540,
         "decorations": false,
         "transparent": true,
         "alwaysOnTop": true,
@@ -23,5 +25,14 @@
     "security": {
       "csp": null
     }
+  },
+  "bundle": {
+    "active": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ]
   }
 }
