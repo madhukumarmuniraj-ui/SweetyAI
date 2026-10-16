@@ -17,6 +17,7 @@ function createWindow() {
     alwaysOnTop: true,
     skipTaskbar: false,
     hasShadow: false,
+    icon: path.join(__dirname, 'assets', 'logo.png'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false, // Enables ultra-fast direct IPC & media access

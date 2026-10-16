@@ -1,3 +1,5 @@
+<p align="center"><img src="logo.svg" width="120" alt="SweetyAI logo"></p>
+
 # SWEETYAI ENTERPRISE LEGAL WORKSTATION (INDIA — 108 MODULES)
 **A Secure, Air-Gapped, Automated Legal-Tech & Litigation Suite for Indian Legal Professionals**
 
@@ -31,6 +33,27 @@
 ---
 
 ## III. LAUNCHING & COMMAND REFERENCE
-- **Interactive Chat & CLI:** Simply type `sweety` in your terminal.
-- **Master Menu Console:** Type `python3 sweety_cli.py` to access all 16+ structured legal categories and execute any of the **108 verified modules**.
+- **Terminal Chat Companion:** `./run_chat.sh` — chats with the local SweetyAI-Core model (Qwen3-8B, 4-bit on GPU) with persistent SQLite memory (`/time`, `/files`, `/folder`, `/calc`, `exit`).
+- **Desktop Window:** `./run_ui.sh` — native frameless desktop window (Tauri; Wayland-safe via the WebKit DMABUF fallback).
+- **Web / Electron Shell:** `npm run desktop` (backend + window in one shot) or `venv/bin/python server.py` + `npm run start`.
+- **Master Menu Console:** `./run_sweety.sh` (or `venv/bin/python sweety_cli.py`) — all 16+ structured legal categories and the **108 verified modules**.
+- **Direct Module Call:** `venv/bin/python sweety.py legal <module>` for any single engine.
+- **Batch Samples:** `venv/bin/python run_all_samples.py` — generates 13 complete legal suites end-to-end.
 - **Background Daemons:** Managed automatically via user systemd services (`sweetyai-backend.service` and `sweetyai.service`) with optimized low RAM/CPU consumption.
+
+---
+
+## IV. LOCAL MODELS, ROUTING & RAG
+- **SweetyAI-Core (Deep Route):** Qwen3-8B (bf16) run 4-bit (nf4) on the GPU (~6 GB VRAM) via transformers + bitsandbytes. Heavy / legal prompts route here automatically.
+- **Light Route:** Qwen2.5-Coder-3B (Q4_K_M GGUF) via `llama-cpp-python` on CPU for quick queries.
+- **DualModelRouter (`sweety_core.py`):** keyword/size-based routing (petitions, 138, writ, audit… → deep route) with automatic fallback to the other engine if one is unavailable.
+- **RAG:** fully offline ChromaDB stores (`chroma_db/`, `sweety_vectordb/`, `sweetyai_legal_db/`) with local `all-MiniLM-L6-v2` embeddings; served at `POST /rag-chat` with source attribution.
+- **Offline by design:** `HF_HUB_OFFLINE=1` everywhere — no model or data ever leaves the machine.
+
+---
+
+## V. TESTING & VERIFICATION
+- `venv/bin/python -m pytest -q` → **51 tests** (all passing)
+- `venv/bin/python verify_all_modules.py` → **15/15** module diagnostic with artifact proof
+- `venv/bin/python run_all_samples.py` → **13/13** end-to-end legal suites
+- `venv/bin/python health_check.py` & `master_sweety_audit.py` → component & 100%-operational audits

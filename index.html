@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sweety AI - Chat</title>
+    <link rel="icon" type="image/svg+xml" href="/logo.svg">
+    <link rel="apple-touch-icon" href="/logo.png">
     <!-- Tailwind CSS CDN for instant styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -41,7 +43,7 @@
             <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white px-2 py-1 rounded">
                 <i class="fa-solid fa-bars"></i>
             </button>
-            <span class="text-sm font-semibold text-gray-300">Sweety AI v1.0</span>
+            <span class="flex items-center gap-2 text-sm font-semibold text-gray-300"><img src="/logo.svg" alt="SweetyAI" class="w-6 h-6 rounded-md shadow">Sweety AI v1.0</span>
             <label class="flex items-center gap-2 text-xs text-gray-400 cursor-pointer select-none" title="Search your local legal knowledge base">
                 <input type="checkbox" id="ragToggle" checked class="accent-emerald-500">
                 RAG
@@ -52,6 +54,7 @@
         <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-6">
             <!-- Welcome Greeting -->
             <div class="max-w-3xl mx-auto text-center mt-12 space-y-3">
+                <img src="/logo.svg" alt="SweetyAI" class="w-20 h-20 mx-auto rounded-2xl shadow-lg">
                 <h1 class="text-3xl font-bold tracking-tight">What can I help with today?</h1>
             </div>
         </div>
@@ -84,6 +87,7 @@
         const API_BASE = "http://127.0.0.1:8765";
         const WELCOME_HTML = `
             <div class="max-w-3xl mx-auto text-center mt-12 space-y-3">
+                <img src="./logo.svg" alt="SweetyAI" class="w-20 h-20 mx-auto rounded-2xl shadow-lg">
                 <h1 class="text-3xl font-bold tracking-tight">What can I help with today?</h1>
             </div>`;
 
