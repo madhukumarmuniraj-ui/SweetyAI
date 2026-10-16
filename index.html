@@ -5,25 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sweety AI - Chat</title>
     <!-- Tailwind CSS CDN for instant styling -->
-    <script src="https://cdn.tailwindcss.com">
-        // Added Enter key handler
-        document.addEventListener('DOMContentLoaded', () => {
-            const ta = document.getElementById('textarea') || document.querySelector('textarea');
-            if (ta) {
-                ta.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        if (typeof handleSendMessage === 'function') {
-                            handleSendMessage(e);
-                        } else if (typeof sendMessage === 'function') {
-                            sendMessage();
-                        }
-                    }
-                });
-            }
-        });
-        </script>
-        
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-[#1e1e1e] text-gray-100 h-screen flex overflow-hidden font-sans">
@@ -53,14 +35,17 @@
 
     <!-- MAIN CHAT CONTAINER -->
     <div class="flex-1 flex flex-col h-full bg-[#212121]">
-        
+
         <!-- Top Bar -->
         <div class="h-14 border-b border-gray-800 flex items-center px-4 justify-between bg-[#212121]">
             <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white px-2 py-1 rounded">
                 <i class="fa-solid fa-bars"></i>
             </button>
             <span class="text-sm font-semibold text-gray-300">Sweety AI v1.0</span>
-            <div class="w-6"></div> <!-- Balance spacer -->
+            <label class="flex items-center gap-2 text-xs text-gray-400 cursor-pointer select-none" title="Search your local legal knowledge base">
+                <input type="checkbox" id="ragToggle" checked class="accent-emerald-500">
+                RAG
+            </label>
         </div>
 
         <!-- Chat History Area -->
@@ -74,10 +59,9 @@
         <!-- Bottom Input Form -->
         <div class="p-4 bg-gradient-to-t from-[#212121] via-[#212121] to-transparent">
             <div class="max-w-3xl mx-auto">
-                <form id="chat-form" onsubmit="handleSendMessage(event)" class="relative bg-[#2f2f2f] rounded-2xl border border-gray-700 focus-within:border-gray-500 shadow-lg">
-                    <textarea id="textarea" id="user-input" rows="1" placeholder="Message Sweety AI..." 
-                        class="w-full bg-transparent px-4 py-3.5 pr-12 text-gray-100 placeholder-gray-400 focus:outline-none resize-none max-h-48 text-sm"
-                        onkeydown="handleKeyDown(event)"></textarea>
+                <form id="chat-form" class="relative bg-[#2f2f2f] rounded-2xl border border-gray-700 focus-within:border-gray-500 shadow-lg">
+                    <textarea id="textarea" rows="1" placeholder="Message Sweety AI..."
+                        class="w-full bg-transparent px-4 py-3.5 pr-12 text-gray-100 placeholder-gray-400 focus:outline-none resize-none max-h-48 text-sm"></textarea>
                     <button type="submit" id="send-btn" class="absolute right-2.5 bottom-2.5 bg-white text-black p-2 rounded-xl hover:bg-gray-200 transition disabled:opacity-40" disabled>
                         <i class="fa-solid fa-arrow-up text-xs"></i>
                     </button>
@@ -90,27 +74,57 @@
 
     </div>
 
-    <!-- Script to handle chat logic and UI interactions -->
+    <!-- Chat logic and UI interactions -->
     <script>
-        const textarea = document.getElementById('user-input');
+        const textarea = document.getElementById('textarea');
         const sendBtn = document.getElementById('send-btn');
         const chatContainer = document.getElementById('chat-container');
+        const chatForm = document.getElementById('chat-form');
 
-        // Auto-enable send button on text input
-        textarea.addEventListener('input', function() {
+        const API_BASE = "http://127.0.0.1:8765";
+        const WELCOME_HTML = `
+            <div class="max-w-3xl mx-auto text-center mt-12 space-y-3">
+                <h1 class="text-3xl font-bold tracking-tight">What can I help with today?</h1>
+            </div>`;
+
+        let chatHistory = [];
+        let historyIndex = -1;
+
+        // Auto-resize + enable/disable send button
+        textarea.addEventListener('input', function () {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
             sendBtn.disabled = this.value.trim() === '';
         });
 
-        function handleKeyDown(event) {
+        // Enter to send, Shift+Enter for newline, Up/Down for history recall
+        textarea.addEventListener('keydown', function (event) {
+            if (event.key === 'ArrowUp' && chatHistory.length > 0) {
+                event.preventDefault();
+                if (historyIndex < chatHistory.length - 1) historyIndex++;
+                textarea.value = chatHistory[chatHistory.length - 1 - historyIndex];
+                sendBtn.disabled = false;
+                return;
+            }
+            if (event.key === 'ArrowDown' && historyIndex >= 0) {
+                event.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    textarea.value = chatHistory[chatHistory.length - 1 - historyIndex];
+                } else {
+                    historyIndex = -1;
+                    textarea.value = '';
+                }
+                sendBtn.disabled = textarea.value.trim() === '';
+                return;
+            }
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
-                if (textarea.value.trim() !== '') {
-                    document.getElementById('chat-form').dispatchEvent(new Event('submit'));
-                }
+                handleSendMessage(event);
             }
-        }
+        });
+
+        chatForm.addEventListener('submit', handleSendMessage);
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -120,14 +134,24 @@
         }
 
         function newChat() {
-            chatContainer.innerHTML = `
-                <div class="max-w-3xl mx-auto text-center mt-12 space-y-3">
-                    <h1 class="text-3xl font-bold tracking-tight">What can I help with today?</h1>
-                </div>`;
+            chatContainer.innerHTML = WELCOME_HTML;
+            chatHistory = [];
+            historyIndex = -1;
+        }
+
+        function appendBubble({ role, html, extraClass = '' }) {
+            const bubble = document.createElement('div');
+            bubble.className = `max-w-3xl mx-auto flex gap-4 px-4 ${extraClass}`;
+            const badge = role === 'user'
+                ? '<div class="w-8 h-8 rounded-full bg-indigo-600 flex-shrink-0 flex items-center justify-center font-bold text-sm">U</div>'
+                : '<div class="w-8 h-8 rounded-full bg-emerald-600 flex-shrink-0 flex items-center justify-center font-bold text-sm">S</div>';
+            bubble.innerHTML = `${badge}<div class="flex-1 space-y-1 text-gray-200 text-sm leading-relaxed whitespace-pre-wrap">${html}</div>`;
+            chatContainer.appendChild(bubble);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
         function handleSendMessage(event) {
-            event.preventDefault();
+            if (event) event.preventDefault();
             const message = textarea.value.trim();
             if (!message) return;
 
@@ -135,202 +159,46 @@
                 chatContainer.innerHTML = '';
             }
 
-            const userBubble = document.createElement('div');
-            userBubble.className = 'max-w-3xl mx-auto flex gap-4 px-4';
-            userBubble.innerHTML = `<div class="w-8 h-8 rounded-full bg-indigo-600 flex-shrink-0 flex items-center justify-center font-bold text-sm">U</div><div class="flex-1 space-y-1 text-gray-200 text-sm leading-relaxed whitespace-pre-wrap">${escapeHtml(message)}</div>`;
-            chatContainer.appendChild(userBubble);
+            appendBubble({ role: 'user', html: escapeHtml(message) });
 
+            chatHistory.push(message);
+            historyIndex = -1;
             textarea.value = '';
             textarea.style.height = 'auto';
             sendBtn.disabled = true;
-            chatContainer.scrollTop = chatContainer.scrollHeight;
 
             const isRagMode = document.getElementById('ragToggle') ? document.getElementById('ragToggle').checked : true;
-            const endpoint = isRagMode ? "http://127.0.0.1:8765/rag-chat" : "http://127.0.0.1:8765/chat";
-            
-            fetch(endpoint,, {
+            const endpoint = isRagMode ? `${API_BASE}/rag-chat` : `${API_BASE}/chat`;
+
+            sendBtn.classList.add('opacity-40');
+
+            fetch(endpoint, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message: message })
             })
-            .then(res => res.json())
-            .then(data => {
-                sendBtn.disabled = false;
-                const aiBubble = document.createElement('div');
-                aiBubble.className = 'max-w-3xl mx-auto flex gap-4 px-4 bg-[#2a2a2a]/50 py-4 rounded-xl';
-                const replyText = data.response || data.reply || data.answer || JSON.stringify(data);
-                aiBubble.innerHTML = `<div class="w-8 h-8 rounded-full bg-emerald-600 flex-shrink-0 flex items-center justify-center font-bold text-sm">S</div><div class="flex-1 space-y-1 text-gray-200 text-sm leading-relaxed">${escapeHtml(replyText)}</div>`;
-                chatContainer.appendChild(aiBubble);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            })
-            .catch(error => {
-                sendBtn.disabled = false;
-                const errBubble = document.createElement('div');
-                errBubble.className = 'max-w-3xl mx-auto flex gap-4 px-4 bg-red-900/50 py-4 rounded-xl';
-                errBubble.innerHTML = `<div class="flex-1 text-red-200 text-sm">Backend Connection Error: Cannot reach the Python server.</div>`;
-                chatContainer.appendChild(errBubble);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            });
+                .then(res => res.json())
+                .then(data => {
+                    const replyText = data.response || data.reply || data.answer || JSON.stringify(data);
+                    appendBubble({ role: 'assistant', html: escapeHtml(replyText), extraClass: 'bg-[#2a2a2a]/50 py-4 rounded-xl' });
+                })
+                .catch(() => {
+                    appendBubble({
+                        role: 'assistant',
+                        html: 'Backend Connection Error: Cannot reach the Python server. Start it with <code>python3 server.py</code>.',
+                        extraClass: 'bg-red-900/50 py-4 rounded-xl text-red-200'
+                    });
+                })
+                .finally(() => {
+                    sendBtn.classList.remove('opacity-40');
+                    sendBtn.disabled = textarea.value.trim() === '';
+                });
         }
 
         function escapeHtml(text) {
             const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-            return text.replace(/[&<>"']/g, m => map[m]);
+            return String(text).replace(/[&<>"']/g, m => map[m]);
         }
-    
-        // Added Enter key handler
-        document.addEventListener('DOMContentLoaded', () => {
-            const ta = document.getElementById('textarea') || document.querySelector('textarea');
-            if (ta) {
-                ta.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        if (typeof handleSendMessage === 'function') {
-                            handleSendMessage(e);
-                        } else if (typeof sendMessage === 'function') {
-                            sendMessage();
-                        }
-                    }
-                });
-            }
-        });
-        </script>
-        
-
-    <script>
-    // Robust Enter-key handler for SweetyAI
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter' && !event.shiftKey) {
-            const activeEl = document.activeElement;
-            if (activeEl && (activeEl.tagName === 'TEXTAREA' || activeEl.id === 'chat-input' || activeEl.id === 'textarea')) {
-                event.preventDefault();
-                if (typeof handleSendMessage === 'function') {
-                    handleSendMessage(event);
-                } else if (typeof sendMessage === 'function') {
-                    sendMessage();
-                } else {
-                    const sendBtn = document.getElementById('send-btn') || document.getElementById('sendBtn');
-                    if (sendBtn) sendBtn.click();
-                }
-            }
-        }
-    });
     </script>
-    
-    <script>
-    // SweetyAI Robust Input Controller (Enter to send, Up-arrow for history)
-    (function() {
-        let messageHistory = [];
-        let historyIndex = -1;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Find input dynamically (supports textarea or input with id chat-input, textarea, etc.)
-            const inputEl = document.getElementById('chat-input') || document.getElementById('textarea') || document.querySelector('textarea') || document.querySelector('input[type="text"]');
-            const sendBtn = document.getElementById('send-btn') || document.getElementById('sendBtn');
-
-            if (!inputEl) return;
-
-            inputEl.addEventListener('keydown', function(e) {
-                // Up Arrow: History recall
-                if (e.key === 'ArrowUp') {
-                    if (messageHistory.length > 0) {
-                        e.preventDefault();
-                        if (historyIndex < messageHistory.length - 1) {
-                            historyIndex++;
-                        }
-                        inputEl.value = messageHistory[messageHistory.length - 1 - historyIndex];
-                    }
-                    return;
-                }
-
-                // Down Arrow: Next history item
-                if (e.key === 'ArrowDown') {
-                    if (historyIndex > 0) {
-                        e.preventDefault();
-                        historyIndex--;
-                        inputEl.value = messageHistory[messageHistory.length - 1 - historyIndex];
-                    } else if (historyIndex === 0) {
-                        e.preventDefault();
-                        historyIndex = -1;
-                        inputEl.value = '';
-                    }
-                    return;
-                }
-
-                // Enter Key: Send message
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    const text = inputEl.value.trim();
-                    if (!text) return;
-
-                    // Save to history
-                    messageHistory.push(text);
-                    historyIndex = -1;
-
-                    // Trigger the send function
-                    if (typeof handleSendMessage === 'function') {
-                        // Ensure textarea.value is populated so handleSendMessage grabs it
-                        inputEl.value = text;
-                        handleSendMessage(e);
-                    } else if (typeof sendMessage === 'function') {
-                        sendMessage();
-                    } else if (sendBtn) {
-                        sendBtn.click();
-                    }
-                }
-            });
-        });
-    })();
-    </script>
-    
-    
-    <script>
-    let chatHistory = [];
-    let historyIdx = -1;
-
-    // Ensure handleSendMessage correctly grabs the textarea value and clears it
-    window.addEventListener('DOMContentLoaded', () => {
-        const ta = document.getElementById('textarea');
-        if (!ta) return;
-
-        ta.addEventListener('keydown', function(e) {
-            if (e.key === 'ArrowUp') {
-                if (chatHistory.length > 0) {
-                    e.preventDefault();
-                    if (historyIdx < chatHistory.length - 1) {
-                        historyIdx++;
-                    }
-                    ta.value = chatHistory[chatHistory.length - 1 - historyIdx];
-                }
-                return;
-            }
-
-            if (e.key === 'ArrowDown') {
-                if (historyIdx > 0) {
-                    e.preventDefault();
-                    historyIdx--;
-                    ta.value = chatHistory[chatHistory.length - 1 - historyIdx];
-                } else if (historyIdx === 0) {
-                    e.preventDefault();
-                    historyIdx = -1;
-                    ta.value = '';
-                }
-                return;
-            }
-
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                const val = ta.value.trim();
-                if (val) {
-                    chatHistory.push(val);
-                    historyIdx = -1;
-                }
-                if (typeof handleSendMessage === 'function') {
-                    handleSendMessage(e);
-                }
-            }
-        });
-    });
-    </script>
-    </body>
-    
+</body>
+</html>
