@@ -21,10 +21,12 @@ gc.set_threshold(100, 5, 5)
 HOST = "0.0.0.0"
 PORT = 8765
 
-# Model paths
-LIGHTWEIGHT_MODEL = None  # DialoGPT-small for quick responses
-DEEP_MODEL_PATH = "D:/llm models/Qwen2.5-Coder-3B-Instruct-abliterated-Q4_K_M.gguf"  # Qwen for coding & analysis
-BACKUP_MODEL_PATH = "D:/llm models/mistral-7b-instruct-v0.2.Q4_K_M.gguf"  # Fallback option
+# Model paths (all local to this repo)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LIGHTWEIGHT_MODEL = None  # quick replies are built in, no model needed
+DEEP_MODEL_PATH = os.path.join(
+    BASE_DIR, "SweetyAI-Core", "Qwen2.5-Coder-3B-Instruct-abliterated-Q4_K_M.gguf"
+)  # Qwen 3B GGUF for coding & analysis (requires llama-cpp-python)
 
 # Deep thinking triggers - when to use powerful model
 DEEP_THINKING_TRIGGERS = [
@@ -71,36 +73,28 @@ class HybridAgent:
             return True
 
         try:
-            print("[SweetyAI] Loading deep analysis model (Claude 4.5 Opus 20B)...")
+            if not os.path.exists(DEEP_MODEL_PATH):
+                print(f"[SweetyAI] Deep model not found at {DEEP_MODEL_PATH}")
+                return False
 
-            # Import heavy libraries only when needed
-            import torch
-            from transformers import AutoTokenizer, LlamaForCausalLM
+            print("[SweetyAI] Loading deep analysis model (Qwen2.5-Coder-3B GGUF)...")
 
-            # Use CPU to manage VRAM usage
-            device = "cpu"
-
-            # Load the GGUF model
-            self.deep_tokenizer = AutoTokenizer.from_pretrained(
-                "microsoft/DialoGPT-medium",  # Use as tokenizer base
-                cache_dir="./cache_deep"
-            )
-
-            # For GGUF models, we'd use llama-cpp-python
+            # GGUF models run through llama-cpp-python (tokenizer is inside the GGUF)
             try:
                 from llama_cpp import Llama
-                self.deep_model = Llama(
-                    model_path=DEEP_MODEL_PATH,
-                    n_ctx=4096,
-                    n_threads=4,
-                    verbose=False
-                )
-                self.deep_model_loaded = True
-                print("[SweetyAI] Deep analysis model loaded successfully!")
-                return True
             except ImportError:
                 print("[SweetyAI] llama-cpp-python not available, using fallback")
                 return False
+
+            self.deep_model = Llama(
+                model_path=DEEP_MODEL_PATH,
+                n_ctx=4096,
+                n_threads=4,
+                verbose=False
+            )
+            self.deep_model_loaded = True
+            print("[SweetyAI] Deep analysis model loaded successfully!")
+            return True
 
         except Exception as e:
             print(f"[SweetyAI] Could not load deep model: {e}")
@@ -181,8 +175,8 @@ class HybridSweetyHandler(BaseHTTPRequestHandler):
                 "name": "SweetyAI Hybrid",
                 "version": "0.3.0-hybrid",
                 "modes": {
-                    "quick_response": "DialoGPT-small (lightweight)",
-                    "deep_analysis": "Claude 4.5 Opus 20B (on-demand)",
+                    "quick_response": "built-in instant replies",
+                    "deep_analysis": "Qwen2.5-Coder-3B GGUF (local, on-demand)",
                     "current_memory": "optimized"
                 }
             }
@@ -280,8 +274,8 @@ class HybridSweetyHandler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     print(f"[SweetyAI] Starting hybrid intelligence server on {HOST}:{PORT}")
-    print(f"[SweetyAI] Quick Mode: Lightweight DialoGPT (always loaded)")
-    print(f"[SweetyAI] Deep Mode: Claude 4.5 Opus 20B (loads on-demand)")
+    print(f"[SweetyAI] Quick Mode: built-in instant replies")
+    print(f"[SweetyAI] Deep Mode: Qwen2.5-Coder-3B GGUF (loads on-demand)")
     print(f"[SweetyAI] Memory: Optimized hybrid system")
 
     server = ThreadingHTTPServer((HOST, PORT), HybridSweetyHandler)

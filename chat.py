@@ -1,3 +1,6 @@
+import os
+os.environ["HF_HUB_OFFLINE"] = "1"  # strictly local: use the SweetyAI-Core checkpoint
+
 import re
 import torch
 from transformers import (
@@ -8,10 +11,11 @@ from transformers import (
 from app.memory import add_message, get_recent_history
 from app.tools import AVAILABLE_TOOLS
 
-MODEL_NAME = "Qwen/Qwen3-8B"
+# Local SweetyAI Core checkpoint (Qwen3-8B, run 4-bit on the GPU)
+MODEL_PATH = "./SweetyAI-Core"
 
-print("Loading tokenizer...")
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+print("Loading SweetyAI Core tokenizer...")
+tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH, local_files_only=True)
 
 print("Configuring 4-bit quantization...")
 quant_config = BitsAndBytesConfig(
@@ -21,17 +25,18 @@ quant_config = BitsAndBytesConfig(
     bnb_4bit_use_double_quant=True,
 )
 
-print("Loading Qwen 8B in 4-bit...")
+print("Loading Qwen 8B in 4-bit (local SweetyAI-Core checkpoint)...")
 model = AutoModelForCausalLM.from_pretrained(
-    MODEL_NAME,
+    MODEL_PATH,
     quantization_config=quant_config,
     device_map={"": 0},
+    local_files_only=True,
 )
 
 print("\n==================================================")
 print("   SweetyAI Terminal Companion (Professional)")
 print("==================================================")
-print("GPU:", torch.cuda.get_device_name(0))
+print("GPU:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU")
 print("VRAM allocated:",
       round(torch.cuda.memory_allocated(0) / 1024**3, 2),
       "GB")
@@ -90,18 +95,26 @@ while True:
         "Never generate internal monologues, thinking blocks, meta-commentary, or playful joking."
     )
 
-    prompt_parts = [system_prompt]
+    system_parts = [system_prompt]
     if chat_history:
-        prompt_parts.append(f"[Recent Conversation History]:\n{chat_history}")
-    
+        system_parts.append(f"[Recent Conversation History]:\n{chat_history}")
+
     if tool_output is not None:
-        prompt_parts.append(f"[Local Tool Execution Result]:\n{tool_output}")
-    
-    prompt_parts.append(f"[User Question]: {user_input}")
-    augmented_prompt = "\n\n".join(prompt_parts)
+        system_parts.append(f"[Local Tool Execution Result]:\n{tool_output}")
+
+    messages = [
+        {"role": "system", "content": "\n\n".join(system_parts)},
+        {"role": "user", "content": user_input},
+    ]
+    try:
+        prompt_text = tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
+        )
+    except TypeError:
+        prompt_text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
     inputs = tokenizer(
-        [augmented_prompt],
+        [prompt_text],
         return_tensors="pt"
     ).to("cuda")
 
