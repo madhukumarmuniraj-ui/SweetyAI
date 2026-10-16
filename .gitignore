@@ -76,6 +76,7 @@ precedents.index
 precedents_docs.txt
 
 # ============ Generated legal output (local only) ============
+/PROACTIVE_AGENT_DIGEST.md
 arbitration_petitions/
 bail_petitions/
 chronology_outputs/
